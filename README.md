@@ -1,4 +1,4 @@
-# Musterstadt Gießt – Tree Data
+# Leipzig waters – weather and tree data
 
 Please review the content of the `README.md` and adjust it to the project.
 
@@ -46,7 +46,6 @@ conda update conda
 conda create -n treedata
 conda activate treedata
 conda install pip
-pip install -r requirements.txt
 ```
 
 * install GDAL
@@ -58,14 +57,19 @@ conda install -c conda-forge gdal
 ```
 conda install -c conda-forge krb5
 pip install gssapi
-gdalwarp -v
+gdalwarp --version
+```
+
+* install dependencies
+```
+pip install -r requirements.txt
 ```
 
 ### Troubleshooting
- * error when executing `gdalwarp -v`: `gdalwarp: error while loading shared libraries: libpoppler.so.126: cannot open shared object file: No such file or directory`
+ * error when executing `gdalwarp --version`: `gdalwarp: error while loading shared libraries: libpoppler.so.126: cannot open shared object file: No such file or directory`
    * **solution**: `conda install -c conda-forge gdal libgdal tiledb=2.2`
  * error while converting WFS XML to GeoJSON (e.g. city shape): `fiona._err.CPLE_AppDefinedError: PROJ: internal_proj_create: no database context specified`
-   * **solution**: remove environments via `unset PROJ_LIB` and `unset GDAL_DATA` as they conflict 
+   * **solution**: remove environments via `unset PROJ_LIB` and `unset GDAL_DATA` as they conflict
 
 ### PyCharm
  * Download Community Edition: https://www.jetbrains.com/pycharm/
@@ -78,14 +82,14 @@ gdalwarp -v
    * set your (locally) PostgreSQL connection data
 
 ### Local Supabase
- * follow https://github.com/greenbluelab/musterstadt-giesst-api#supabase-local
+ * follow https://gitlab.com/leipziggiesst/api#supabase-local
    (resp. https://supabase.com/docs/guides/self-hosting/docker for general approach) 
  * then adapt ./resources/.env to match supabase/docker/.env settings for Supabase PostgreSQL
  * in http://localhost:54323/project/default/database/extensions extension POSTGIS should be 
    already enabled, when used the general approach: enable extensions POSTGIS in 
    http://localhost:3000/project/default/database/extensions 
    (see also https://supabase.com/docs/guides/database/extensions/postgis)
- * the initial tables and indexes should be already created within musterstadt-giesst-api
+ * the initial tables and indexes should be already created within leipziggiesst/api
 
 resources/.env
 ```
@@ -96,7 +100,7 @@ PG_PASS=postgres
 PG_DB=postgres
 ```
 
- * run `supabase status` in `musterstadt-giesst-api` and add the values 
+ * run `supabase status` in `leipzig-giesst-api` and add the values 
 
 ```
 SUPABASE_URL=<API URL, e.g. http://localhost:54321>
@@ -112,9 +116,14 @@ MAPBOXTOKEN=<create secret access token as described here https://docs.mapbox.co
 MAPBOXTILESET=<create new tileset under https://studio.mapbox.com/tilesets/ and the copy tile set id and use it here>
 ```
 
+(for creating tile set use dummy csv file
+```
+id,lng,lat
+1,12,51
+```
+)
+
 ## Demo
- * Download city shape WFS file to geojson: `python ./treedata/main.py city_shape`
-   * command with all options: `python ./treedata/main.py city_shape --wfs-url <WFS-URL> --source-encoding iso-8859-1 --xml-file-name wfs --geojson-file-name city_shape --skip-download-wfs-xml --skip-convert-to-geojson`
  * Download trees WFS file to geojson: `python ./treedata/main.py trees`
    * command with all options: `python ./treedata/main.py trees --wfs-url <WFS-URL> --source-encoding iso-8859-1 --xml-file-name wfs --geojson-file-name trees --skip-download-wfs-xml --skip-convert-to-geojson`
  * Process trees: `python ./treedata/main.py trees_process`

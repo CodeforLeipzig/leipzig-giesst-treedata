@@ -1,0 +1,47 @@
+stages:
+   - prepare
+   - process
+
+
+variables:
+  # Use TLS https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#tls-enabled
+  DOCKER_HOST: tcp://docker:2376
+  DOCKER_TLS_CERTDIR: "/certs"
+  CONDA_BASE_IMAGE: $CI_REGISTRY/leipziggiesst/treedata/conda:latest
+  CONTAINER_BASE_IMAGE: $CI_REGISTRY/leipziggiesst/treedata/treedata:latest
+
+build-conda-image:
+  when: manual
+  stage: prepare
+  image: docker:20.10.16
+  services:
+    - docker:20.10.16-dind
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - cd ./.docker
+    - docker build -t $CONDA_BASE_IMAGE .
+    - docker push $CONDA_BASE_IMAGE
+
+
+build-base-image:
+  when: manual
+  stage: prepare
+  image: docker:20.10.16
+  services:
+    - docker:20.10.16-dind
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CONTAINER_BASE_IMAGE .
+    - docker push $CONTAINER_BASE_IMAGE
+
+
+download-treedata:
+  stage: process
+  image: $CONTAINER_BASE_IMAGE
+  script:
+    - /bin/bash -c "conda run -n treedata python ./treedata/main.py trees --source-encoding iso-8859-1 --xml-file-name wfs --skip-convert-to-geojson"
+    - /bin/bash -c "sed -i s/UTF-8/ISO-8859-1/g resources/trees/wfs.xml"
+    - /bin/bash -c "conda run -n treedata python ./treedata/main.py trees --source-encoding iso-8859-1 --xml-file-name wfs --geojson-file-name trees --skip-download-wfs-xml"
+  artifacts:
+    paths:
+      - resources/trees/trees.geojson

@@ -1,27 +1,38 @@
 {
     "type": "FeatureCollection",
     "features": [{
-            "id": "0",
-            "type": "Feature",
-            "properties": {
-                "gml_id": "L1261.00008560:0006d753",
-                "name": "Laubestraße",
-                "standort_nr": 21,
-                "art_botanisch": "Alnus x spaethii",
-                "art_deutsch": "Spaeths Erle",
-                "jalter": "6                            ",
-                "baumhoehe_akt": 10.0,
-                "stammdurchmesser_akt": 18.14,
-                "kronendurchmesser_akt": 6.0,
-                "gis_x_utm": 414662.33,
-                "gis_y_utm": 5655162.66,
-                "id": "00008560:0006d753",
-                "aend_dat": "2023-05-09T00:00:00.000"
-            },
             "geometry": {
-                "type": "Point",
-                "coordinates": [13.7827275171723, 51.0416604275827]
-            }
+                "coordinates": [
+                    12.3808351654184,
+                    51.3302177077526
+                ],
+                "type": "Point"
+            },
+            "id": "32524",
+            "properties": {
+                "baumhoehe": 8.0,
+                "baumnummer": "G23033",
+                "fme_tstamp": "2023-12-23",
+                "ga_lang_deutsch": "Zerr-Eiche",
+                "ga_lang_wiss": "Quercus cerris",
+                "gattung": "Quercus",
+                "gebiet": "Grün- und Parkanlagen",
+                "gml_id": "Baeume.32455",
+                "kr_durchm": 4.0,
+                "letzte_bewaesserung": "2022-09-18",
+                "nachpflanzung_geplant": "",
+                "objectid": 32455,
+                "objektkuerzel": "021.014",
+                "ot": "Zentrum-Südost",
+                "patenschaftsnummer": "956",
+                "pflanzjahr": 2014.0,
+                "st_durchm": 13.0,
+                "st_umfang": 41.0,
+                "standzeitraum": "10",
+                "status_patenbaum": "vergeben",
+                "strasse": "Vorplatz Bayrischer Bahnhof"
+            },
+            "type": "Feature"
         }
 	]
 }

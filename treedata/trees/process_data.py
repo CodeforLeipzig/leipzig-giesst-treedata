@@ -45,7 +45,10 @@ genus_mapping = read_genus_mapping()
 
 def lookup_genus(inputs):
     if 'species' in inputs:
-        return inputs['species'].split(" ")[0]
+        if not inputs['species'] is None:
+            return inputs['species'].split(" ")[0]
+        else:
+            return None
     else:
         return None
 
@@ -161,7 +164,7 @@ def transform_new_tree_data(new_trees, attribute_list, schema_mapping_dict, sche
     # replace NA values with 'undefined' and transform data formats to string
     for column in transformed_trees.columns:
         if column != "geometry":
-            dtype = transformed_trees[column].dtype
+            dtype = transformed_trees[column].dtypes
             if str(dtype).startswith('datetime64'):
                 transformed_trees[column] = transformed_trees[column].astype(str)
             elif dtype != object or column == 'kronedurch':
@@ -171,7 +174,7 @@ def transform_new_tree_data(new_trees, attribute_list, schema_mapping_dict, sche
                 try:
                     transformed_trees[column] = transformed_trees[column].astype(int).astype(str)
                 except:
-                    logger.error(f'{column} has type {transformed_trees[column].dtype}')
+                    logger.error(f'{column} has type {transformed_trees[column].dtypes}')
     transformed_trees = transformed_trees.replace(['99999'], None)
     transformed_trees = transformed_trees.replace('', None)
 

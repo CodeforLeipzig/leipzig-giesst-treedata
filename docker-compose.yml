@@ -1,0 +1,4 @@
+services:
+  treedata:
+    image: registry.gitlab.com/leipziggiesst/treedata/treedata:latest
+    command: "/bin/bash -c \"conda info --envs\""
