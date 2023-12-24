@@ -36,6 +36,7 @@ build-base-image:
 
 
 download-treedata:
+  when: manual
   stage: process
   image: $CONTAINER_BASE_IMAGE
   script:
@@ -45,3 +46,12 @@ download-treedata:
   artifacts:
     paths:
       - resources/trees/trees.geojson
+
+
+process-treedata:
+  stage: process
+  image: $CONTAINER_BASE_IMAGE
+  script:
+    - wget "https://gitlab.com/leipziggiesst/treedata/-/jobs/5816881936/artifacts/download?file_type=archive"
+    - unzip artifacts.zip
+    - /bin/bash -c "conda run -n treedata python python ./treedata/main.py trees_process --city-shape-geojson-file-name city_shape --trees-geojson-file-name trees --geojson-file-name trees-transformed --database-table-name trees_tmp --skip-transform --skip-store-as-geojson --skip-upload-to-db"
