@@ -15,7 +15,6 @@ def create_trees_table(engine):
                 "gattung" text,
                 "standortnr" text,
                 "strname" text,
-                "hausnr" text,
                 "pflanzjahr" text,
                 "stammdurch" text,
                 "kronedurch" text,
@@ -54,7 +53,7 @@ def insert_added_trees(engine, original_tree_table, tmp_tree_table):
         result = conn.execute(text(f'''
             INSERT INTO public."{original_tree_table}" ("id")
             SELECT id FROM public."{tmp_tree_table}" AS B
-            WHERE B."id" NOT IN (
+            WHERE B."id" IS NOT NULL AND B."id" NOT IN (
                 SELECT "id" FROM public."{original_tree_table}" AS A
             )        
         '''))
@@ -66,7 +65,7 @@ def updated_trees(engine, original_tree_table, tmp_tree_table):
     sql_update_str = f'''
         WITH subquery AS (
             SELECT B."id", B."lat", B."lng", B."artdtsch", B."artbot", B."gattungdeutsch", B."gattung", 
-                   B."standortnr", B."strname", B."hausnr", B."pflanzjahr", B."stammumfg", 
+                   B."standortnr", B."strname", B."pflanzjahr", B."stammumfg", 
                    B."kronedurch", B."baumhoehe", B."bezirk", B."geom", B."aend_dat" 
             FROM public."{tmp_tree_table}" AS B
         )
@@ -80,8 +79,7 @@ def updated_trees(engine, original_tree_table, tmp_tree_table):
         "gattung" = B."gattung", 
         "standortnr" = B."standortnr", 
         "strname" = B."strname", 
-        "hausnr" = B."hausnr", 
-        "pflanzjahr" = B."pflanzjahr", 
+        "pflanzjahr" = B."pflanzjahr"::int, 
         "stammumfg" = B."stammumfg",            
         "kronedurch" = B."kronedurch",
         "baumhoehe" = B."baumhoehe", 

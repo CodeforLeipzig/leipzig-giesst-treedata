@@ -143,7 +143,7 @@ def transform_new_tree_data(new_trees, attribute_list, schema_mapping_dict, sche
     logger.info(f'Loaded {len(transformed_trees)} trees')
 
     # transform gml_id here
-    transformed_trees['id'] = transformed_trees['standortnr'].str.split(pat=".").str[1]
+    transformed_trees['id'] = new_trees['objectid']
 
     # drop not needed columns based on the columns of the old data
     for column in transformed_trees.columns:
@@ -164,7 +164,7 @@ def transform_new_tree_data(new_trees, attribute_list, schema_mapping_dict, sche
     # replace NA values with 'undefined' and transform data formats to string
     for column in transformed_trees.columns:
         if column != "geometry":
-            dtype = transformed_trees[column].dtypes
+            dtype = transformed_trees[column].dtype
             if str(dtype).startswith('datetime64'):
                 transformed_trees[column] = transformed_trees[column].astype(str)
             elif dtype != object or column == 'kronedurch':
@@ -174,7 +174,7 @@ def transform_new_tree_data(new_trees, attribute_list, schema_mapping_dict, sche
                 try:
                     transformed_trees[column] = transformed_trees[column].astype(int).astype(str)
                 except:
-                    logger.error(f'{column} has type {transformed_trees[column].dtypes}')
+                    logger.error(f'{column} has type {transformed_trees[column].dtype}')
     transformed_trees = transformed_trees.replace(['99999'], None)
     transformed_trees = transformed_trees.replace('', None)
 

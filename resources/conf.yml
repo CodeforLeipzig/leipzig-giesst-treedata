@@ -1,13 +1,12 @@
 data-schema:
   mapping:
-    objectid: id
     geometry: geometry
     baumhoehe: baumhoehe
     st_durchm: stammdurch
     kr_durchm: kronedurch
     gattung: gattung
-    ga_lang_wiss: art_botanisch
-    ga_lang_deutsch: art_deutsch
+    ga_lang_wiss: artbot
+    ga_lang_deutsch: artdtsch
     baumnummer: standortnr
     strasse: strname
     pflanzjahr: pflanzjahr

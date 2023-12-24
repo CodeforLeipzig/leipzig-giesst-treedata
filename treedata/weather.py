@@ -185,6 +185,3 @@ def handle_weather(args):
             mapbox_s3_file_name=mapbox_s3_data['file_name'],
             mapbox_tileset=mapbox_tileset
         )
-
-
-

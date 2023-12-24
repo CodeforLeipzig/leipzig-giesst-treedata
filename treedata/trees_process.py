@@ -18,7 +18,6 @@ attribute_list = [
     'id',
     'geometry',
     'strname',
-    'hausnr',
     'artbot',
     'artdtsch',
     'standortnr',
