@@ -52,5 +52,5 @@ process-treedata:
   stage: process
   script:
     - |
-        /bin/bash -c "curl -o --location --header 'PRIVATE-TOKEN: $CI_JOB_TOKEN' https://gitlab.com/leipziggiesst/treedata/-/jobs/5816881936/artifacts/download?file_type=archive"
-    - unzip artifacts.zip
+        /bin/bash -c "curl -L -o artifacts.zip --header 'PRIVATE-TOKEN: $CI_JOB_TOKEN' https://gitlab.com/leipziggiesst/treedata/-/jobs/5816881936/artifacts/download?file_type=archive"
+    - unzip ./artifacts.zip
