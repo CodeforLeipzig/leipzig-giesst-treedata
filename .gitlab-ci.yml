@@ -50,9 +50,7 @@ download-treedata:
 
 process-treedata:
   stage: process
-  image: $CONTAINER_BASE_IMAGE
   script:
     - |
         /bin/bash -c "curl --location --header 'PRIVATE-TOKEN: $CI_JOB_TOKEN' 'https://gitlab.com/leipziggiesst/treedata/-/jobs/5816881936/artifacts/download?file_type=archive'"
     - unzip artifacts.zip
-    - /bin/bash -c "conda run -n treedata python python ./treedata/main.py trees_process --city-shape-geojson-file-name city_shape --trees-geojson-file-name trees --geojson-file-name trees-transformed --database-table-name trees_tmp --skip-transform --skip-store-as-geojson --skip-upload-to-db"
