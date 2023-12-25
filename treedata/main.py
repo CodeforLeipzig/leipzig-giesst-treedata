@@ -14,6 +14,7 @@ logger = logging.getLogger('root')
 FORMAT = "[%(levelname)s %(name)s] %(message)s"
 logging.basicConfig(format=FORMAT)
 logger.setLevel(logging.DEBUG)
+logging.getLogger("fiona.ogrext").setLevel(logging.WARNING)
 
 start = time.time()
 load_dotenv(f'{ROOT_DIR}/resources/.env')
