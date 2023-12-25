@@ -15,6 +15,7 @@ from radolan.update_tree_radolan_days import get_weather_data_grid_cells, get_so
     update_tree_radolan_days, update_statistics_db, get_sorted_cleaned_grid
 from radolan.write_radolan_geojsons import write_radolan_geojsons, get_radolan_files_for_upload
 from radolan.write_radolan_csvs import write_radolan_csvs
+from radolan.write_radolan_mvts import write_radolan_mvts
 from radolan.create_radolan_grid import create_radolon_grid
 from utils.supabase_storage import upload_files_to_supabase_storage
 from utils.mapbox_upload import get_mapbox_s3_data, notify_mapbox_upload
@@ -59,6 +60,8 @@ def configure_weather_args(parser=argparse.ArgumentParser(description='Process w
                         help='skip step of radolan data geojson file generation and S3 upload', default=False)
     parser.add_argument('--skip-upload-csvs-to-s3', dest='skip_upload_csvs_to_s3', action='store_true',
                         help='skip step of radolan data CSV file generation and S3 upload', default=False)
+    parser.add_argument('--skip-upload-mvts-to-s3', dest='skip_upload_mvts_to_s3', action='store_true',
+                        help='skip step of radolan data MVT file generation and S3 upload', default=False)
     parser.add_argument('--skip-upload-csvs-to-mapbox', dest='skip_upload_csvs_to_mapbox', action='store_true',
                         help='skip step of radolan data CSV file Mapbox S3 upload', default=False)
     parser.set_defaults(which='weather', func=handle_weather)
@@ -153,6 +156,10 @@ def handle_weather(args):
             path=f"{RADOLAN_PATH}/"
         )
         gzip_files(file_path_to_file_name)
+    if not args.skip_upload_mvts_to_s3:
+        write_radolan_mvts(
+            path=f"{RADOLAN_PATH}/"
+        )
     if not args.skip_upload_csvs_to_mapbox:
         for env_var in ["MAPBOXUSERNAME", "MAPBOXTOKEN", "MAPBOXTILESET"]:
             if env_var not in os.environ:
