@@ -21,7 +21,7 @@ def create_trees_table(engine):
                 "baumhoehe" text,
                 "bezirk" text,
                 "geom" geometry,
-                "aend_dat" timestamp,
+                "zuletztakt" timestamp,
                 "adopted" text,
                 "watered" text,
                 "radolan_sum" int4,
@@ -72,7 +72,7 @@ def insert_added_trees(engine, original_tree_table, tmp_tree_table):
             '''))
             tree_count += result.rowcount
             conn.commit()
-    logging.info(f"Inserted {result.rowcount} trees.")
+    logging.info(f"Inserted {tree_count} trees.")
 
 
 def updated_trees(engine, original_tree_table, tmp_tree_table):
@@ -99,7 +99,7 @@ def updated_trees(engine, original_tree_table, tmp_tree_table):
         "baumhoehe" = B."baumhoehe", 
         "bezirk" = B."bezirk",
         "geom" = B."geom",
-        "aend_dat" = B."aend_dat"
+        "zuletztakt" = B."aend_dat"
         FROM subquery AS B
         WHERE A."id" = B."id";
     '''
