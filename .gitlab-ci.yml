@@ -35,24 +35,18 @@ build-base-image:
     - docker push $CONTAINER_BASE_IMAGE
 
 
-download-treedata:
+download-and-process-treedata:
   when: manual
   stage: process
+  environment:
+    name: $CI_COMMIT_REF_NAME
   image: $CONTAINER_BASE_IMAGE
   script:
     - /bin/bash -c "conda run -n treedata python ./treedata/main.py trees --source-encoding iso-8859-1 --xml-file-name wfs --skip-convert-to-geojson"
     - /bin/bash -c "sed -i s/UTF-8/ISO-8859-1/g resources/trees/wfs.xml"
     - /bin/bash -c "conda run -n treedata python ./treedata/main.py trees --source-encoding iso-8859-1 --xml-file-name wfs --geojson-file-name trees --skip-download-wfs-xml"
+    - /bin/bash -c "conda run -n treedata python ./treedata/main.py trees_process --city-shape-geojson-file-name city_shape --trees-geojson-file-name trees --geojson-file-name trees-transformed --database-table-name trees_tmp"
   artifacts:
     paths:
       - resources/trees/trees.geojson
-
-
-process-treedata:
-  stage: process
-  script:
-    - |
-        echo "token: $CI_JOB_TOKEN"
-    - |
-        /bin/bash -c "curl -L -o artifacts.zip --header 'PRIVATE-TOKEN: $CI_JOB_TOKEN' https://gitlab.com/leipziggiesst/treedata/-/jobs/5816881936/artifacts/download?file_type=archive"
-    - unzip ./artifacts.zip
+      - resources/trees/trees-transformed.geojson
