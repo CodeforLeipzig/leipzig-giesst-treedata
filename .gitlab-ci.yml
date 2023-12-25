@@ -65,6 +65,10 @@ download-and-process-radolan-data:
     name: $CI_COMMIT_REF_NAME
   image: $CONTAINER_BASE_IMAGE
   script:
+    - /bin/bash -c "conda install -c conda-forge gdal"
+    - /bin/bash -c "conda install -c conda-forge krb5"
+    - /bin/bash -c "pip install gssapi"
+    - /bin/bash -c "gdalwarp --version"
     - /bin/bash -c "conda run -n treedata python ./treedata/main.py weather --start-days-offset 2 --end-days-offset 1 --city-shape-geojson-file-name city_shape --city-shape-buffer-file-name city_shape-buffered"
   artifacts:
     paths:
