@@ -36,7 +36,10 @@ build-base-image:
 
 
 download-and-process-treedata:
-  when: manual
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - when: manual
   stage: process
   environment:
     name: $CI_COMMIT_REF_NAME
@@ -46,6 +49,23 @@ download-and-process-treedata:
     - /bin/bash -c "sed -i s/UTF-8/ISO-8859-1/g resources/trees/wfs.xml"
     - /bin/bash -c "conda run -n treedata python ./treedata/main.py trees --source-encoding iso-8859-1 --xml-file-name wfs --geojson-file-name trees --skip-download-wfs-xml"
     - /bin/bash -c "conda run -n treedata python ./treedata/main.py trees_process --city-shape-geojson-file-name city_shape --trees-geojson-file-name trees --geojson-file-name trees-transformed --database-table-name trees_tmp"
+  artifacts:
+    paths:
+      - resources/trees/trees.geojson
+      - resources/trees/trees-transformed.geojson
+
+
+download-and-process-radolan-data:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - when: manual
+  stage: process
+  environment:
+    name: $CI_COMMIT_REF_NAME
+  image: $CONTAINER_BASE_IMAGE
+  script:
+    - /bin/bash -c "conda run -n treedata python ./treedata/main.py weather --start-days-offset 2 --end-days-offset 1 --city-shape-geojson-file-name city_shape --city-shape-buffer-file-name city_shape-buffered"
   artifacts:
     paths:
       - resources/trees/trees.geojson
