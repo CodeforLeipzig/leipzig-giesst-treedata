@@ -258,3 +258,5 @@ out/
 /resources/radolan/trees-total-p3.csv.gz
 /resources/radolan/trees-total-p4.csv
 /resources/radolan/trees-total-p4.csv.gz
+/resources/radolan/trees.feather
+/resources/radolan/trees.parquet
