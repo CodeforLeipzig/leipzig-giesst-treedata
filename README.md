@@ -37,6 +37,16 @@ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 rm ./Miniconda3-latest-Linux-x86_64.sh
 ```
 
+### MacOS
+#### Miniconda
+
+```
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh
+./Miniconda3-latest-MacOSX-arm64.sh
+rm ./Miniconda3-latest-MacOSX-arm64.sh
+```
+
+
 ### All
 #### Miniconda
  * change to folder containing this locally checked out Git repo
@@ -126,6 +136,8 @@ id,lng,lat
 ## Demo
  * Download trees WFS file to geojson: `python ./treedata/main.py trees`
    * command with all options: `python ./treedata/main.py trees --wfs-url <WFS-URL> --source-encoding iso-8859-1 --xml-file-name wfs --geojson-file-name trees --skip-download-wfs-xml --skip-convert-to-geojson`
+   * `perl -pi -e s,UTF-8,ISO-8859-1,g resources/trees/wfs.xml` to fix UTF-8 to ISO-8859-1
+   * `python ./treedata/main.py trees --source-encoding iso-8859-1 --xml-file-name wfs --geojson-file-name trees --skip-download-wfs-xml`
  * Process trees: `python ./treedata/main.py trees_process`
    * process specific trees geojson (from resources/trees): `python ./treedata/main.py trees_process --trees-geojson-file-name s_wfs_baumbestand_2023-07-23`
    * command with all options: `python ./treedata/main.py trees_process --city-shape-geojson-file-name city_shape --trees-geojson-file-name trees --geojson-file-name trees-transformed --database-table-name trees_tmp --skip-transform --skip-store-as-geojson --skip-upload-to-db`

@@ -163,9 +163,28 @@ def handle_weather(args):
         write_radolan_mvts(
             path=f"{RADOLAN_PATH}/"
         )
+        file_path_to_file_name = {
+            f"{RADOLAN_PATH}/trees.mvt": "trees.mvt"
+        }
+        upload_files_to_supabase_storage(
+            supabase_url=supabase_url,
+            supabase_bucket_name=supabase_bucket_name,
+            supabase_role_key=supabase_role_key,
+            file_path_to_file_name=file_path_to_file_name
+        )
     if not args.skip_upload_geoarrow_to_s3:
         write_radolan_geoarrow(
             path=f"{RADOLAN_PATH}/"
+        )
+        file_path_to_file_name = {
+            f"{RADOLAN_PATH}/trees.feather": "trees.feather",
+            f"{RADOLAN_PATH}/trees.parquet": "trees.parquet"
+        }
+        upload_files_to_supabase_storage(
+            supabase_url=supabase_url,
+            supabase_bucket_name=supabase_bucket_name,
+            supabase_role_key=supabase_role_key,
+            file_path_to_file_name=file_path_to_file_name
         )
     if not args.skip_upload_csvs_to_mapbox:
         for env_var in ["MAPBOXUSERNAME", "MAPBOXTOKEN", "MAPBOXTILESET"]:
