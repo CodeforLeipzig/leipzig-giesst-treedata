@@ -22,12 +22,12 @@ def write_geoarrow_content(path, file_name):
 
     file_path = f"{path}{file_name}.feather"
     feather.write_feather(
-        table, file_path, compression=None
+        table, file_path, compression="uncompressed"
     )
     pq.write_table(
         table,
         f"{path}{file_name}.parquet",
-        compression=None
+        compression="zstd"
     )
 
 
