@@ -1,6 +1,4 @@
-# Leipzig Gießt – Tree Data
-
-Please review the content of the `README.md` and adjust it to the project.
+# Leipzig waters – weather and tree data
 
 ## Prerequisites
  * [Python 3.11](https://www.python.org/downloads/)
@@ -37,6 +35,16 @@ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 rm ./Miniconda3-latest-Linux-x86_64.sh
 ```
 
+### MacOS
+#### Miniconda
+
+```
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh
+./Miniconda3-latest-MacOSX-arm64.sh
+rm ./Miniconda3-latest-MacOSX-arm64.sh
+```
+
+
 ### All
 #### Miniconda
  * change to folder containing this locally checked out Git repo
@@ -46,7 +54,6 @@ conda update conda
 conda create -n treedata
 conda activate treedata
 conda install pip
-pip install -r requirements.txt
 ```
 
 * install GDAL
@@ -58,14 +65,19 @@ conda install -c conda-forge gdal
 ```
 conda install -c conda-forge krb5
 pip install gssapi
-gdalwarp -v
+gdalwarp --version
+```
+
+* install dependencies
+```
+pip install -r requirements.txt
 ```
 
 ### Troubleshooting
- * error when executing `gdalwarp -v`: `gdalwarp: error while loading shared libraries: libpoppler.so.126: cannot open shared object file: No such file or directory`
+ * error when executing `gdalwarp --version`: `gdalwarp: error while loading shared libraries: libpoppler.so.126: cannot open shared object file: No such file or directory`
    * **solution**: `conda install -c conda-forge gdal libgdal tiledb=2.2`
  * error while converting WFS XML to GeoJSON (e.g. city shape): `fiona._err.CPLE_AppDefinedError: PROJ: internal_proj_create: no database context specified`
-   * **solution**: remove environments via `unset PROJ_LIB` and `unset GDAL_DATA` as they conflict 
+   * **solution**: remove environments via `unset PROJ_LIB` and `unset GDAL_DATA` as they conflict
 
 ### PyCharm
  * Download Community Edition: https://www.jetbrains.com/pycharm/
@@ -78,14 +90,14 @@ gdalwarp -v
    * set your (locally) PostgreSQL connection data
 
 ### Local Supabase
- * follow https://github.com/greenbluelab/musterstadt-giesst-api#supabase-local
+ * follow https://gitlab.com/leipziggiesst/api#supabase-local
    (resp. https://supabase.com/docs/guides/self-hosting/docker for general approach) 
  * then adapt ./resources/.env to match supabase/docker/.env settings for Supabase PostgreSQL
  * in http://localhost:54323/project/default/database/extensions extension POSTGIS should be 
    already enabled, when used the general approach: enable extensions POSTGIS in 
    http://localhost:3000/project/default/database/extensions 
    (see also https://supabase.com/docs/guides/database/extensions/postgis)
- * the initial tables and indexes should be already created within musterstadt-giesst-api
+ * the initial tables and indexes should be already created within leipziggiesst/api
 
 resources/.env
 ```
@@ -96,7 +108,7 @@ PG_PASS=postgres
 PG_DB=postgres
 ```
 
- * run `supabase status` in `musterstadt-giesst-api` and add the values 
+ * run `supabase status` in `leipzig-giesst-api` and add the values 
 
 ```
 SUPABASE_URL=<API URL, e.g. http://localhost:54321>
@@ -112,17 +124,24 @@ MAPBOXTOKEN=<create secret access token as described here https://docs.mapbox.co
 MAPBOXTILESET=<create new tileset under https://studio.mapbox.com/tilesets/ and the copy tile set id and use it here>
 ```
 
+(for creating tile set use dummy csv file
+```
+id,lng,lat
+1,12,51
+```
+)
+
 ## Demo
- * Download city shape WFS file to geojson: `python ./treedata/main.py city_shape`
-   * command with all options: `python ./treedata/main.py city_shape --wfs-url <WFS-URL> --source-encoding iso-8859-1 --xml-file-name wfs --geojson-file-name city_shape --skip-download-wfs-xml --skip-convert-to-geojson`
- * Download trees Shapefile file to geojson: `python ./treedata/main.py trees-shp`
-   * command with all options: `python ./treedata/main.py trees-shp --shp-url <Shapefile-URL> --source-encoding iso-8859-1 --shp-file-name shp --geojson-file-name trees --skip-download-shp --skip-convert-to-geojson`
+ * Download trees WFS file to geojson: `python ./treedata/main.py trees`
+   * command with all options: `python ./treedata/main.py trees --wfs-url <WFS-URL> --source-encoding iso-8859-1 --xml-file-name wfs --geojson-file-name trees --skip-download-wfs-xml --skip-convert-to-geojson`
+   * `perl -pi -e s,UTF-8,ISO-8859-1,g resources/trees/wfs.xml` to fix UTF-8 to ISO-8859-1
+   * `python ./treedata/main.py trees --source-encoding iso-8859-1 --xml-file-name wfs --geojson-file-name trees --skip-download-wfs-xml`
  * Process trees: `python ./treedata/main.py trees_process`
    * process specific trees geojson (from resources/trees): `python ./treedata/main.py trees_process --trees-geojson-file-name s_wfs_baumbestand_2023-07-23`
    * command with all options: `python ./treedata/main.py trees_process --city-shape-geojson-file-name city_shape --trees-geojson-file-name trees --geojson-file-name trees-transformed --database-table-name trees_tmp --skip-transform --skip-store-as-geojson --skip-upload-to-db`
    * store as file only: `python ./treedata/main.py trees_process --city-shape-geojson-file-name city_shape --skip-upload-to-db --trees-geojson-file-name s_wfs_baumbestand_2023-07-15`
    * store in db only: `python ./treedata/main.py trees_process --skip-transform --skip-store-as-geojson --trees-geojson-file-name trees_transformed --database-table-name trees_tmp`
  * Process weather data (under Windows run these commands in Anaconda Prompt (miniconda3) console): `python ./treedata/main.py weather`
-   * command with all options: `python ./treedata/main.py weather --start-days-offset 2 --end-days-offset 1 --city-shape-geojson-file-name city_shape-small --city-shape-buffer-file-name city_shape-small-buffered --city-shape-buffer 2000 --city-shape-simplify 1000  --skip-buffer-city-shape --skip-download-weather-data --skip-polygonize-weather-data --skip-join-radolan-data --skip-upload-radolan-data --skip-update-tree-radolan-days --skip-upload-geojsons-to-s3 --skip-upload-csvs-to-s3 --skip-upload-csvs-to-mapbox`
+   * command with all options: `python ./treedata/main.py weather --start-days-offset 2 --end-days-offset 1 --city-shape-geojson-file-name city_shape-small --city-shape-buffer-file-name city_shape-small-buffered --city-shape-buffer 2000 --city-shape-simplify 1000  --skip-buffer-city-shape --skip-download-weather-data --skip-polygonize-weather-data --skip-join-radolan-data --skip-upload-radolan-data --skip-update-tree-radolan-days --skip-upload-geojsons-to-s3 --skip-upload-csvs-to-s3 --skip-upload-mvts-to-s3 --skip-upload-geoarrow-to-s3 --skip-upload-csvs-to-mapbox`
    * only join radolan shp files: `python ./treedata/main.py weather --skip-download-weather-data --skip-unzip-weather-data --skip-buffer-city-shape --skip-polygonize-weather-data`
    * only upload radolan geojson file: `python ./treedata/main.py weather --skip-download-weather-data --skip-unzip-weather-data --skip-buffer-city-shape --skip-polygonize-weather-data --skip-join-radolan-data`

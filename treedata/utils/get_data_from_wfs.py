@@ -14,10 +14,7 @@ if (not os.environ.get('PYTHONHTTPSVERIFY', '') and
     ssl._create_default_https_context = ssl._create_unverified_context
 
 
-def get_wfs_request_url(wfs_url):
-    wfs = WebFeatureService(url=wfs_url)
-    layer = f"cls:{list(wfs.contents)[-1].split(':')[-1]}"
-    logger.info(f"Found layer {layer}")
+def get_wfs_request_url(wfs_url, layer):
     params = dict(service='WFS', version="2.0.0", request='GetFeature', typeNames=layer
                   # , outputFormat='text/xml; subtype="gml/3.2.1"'
                   )
@@ -34,6 +31,7 @@ def download_wfs_to_xml(wfs_url, source_encoding, outfile_path):
 def convert_xml_to_geojson(infile_path, source_encoding, outfile_path):
     logger.info(f'Load XML {infile_path}.xml')
     data = gpd.read_file(f"{infile_path}.xml", encoding=source_encoding, crs_wkt='2100')
+    data['letzte_bewaesserung'] = data['letzte_bewaesserung'].dt.strftime('%Y-%m-%d')
     store_as_geojson(data, outfile_path)
 
 

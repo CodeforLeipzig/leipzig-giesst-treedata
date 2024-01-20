@@ -2,7 +2,6 @@ import argparse
 import logging
 import os
 import time
-from city_wfs import configure_city_shape_args
 from trees_wfs import configure_trees_args
 from trees_shape import configure_trees_args as configure_trees_shape_args
 from trees_process import configure_trees_process_args
@@ -16,15 +15,13 @@ logger = logging.getLogger('root')
 FORMAT = "[%(levelname)s %(name)s] %(message)s"
 logging.basicConfig(format=FORMAT)
 logger.setLevel(logging.DEBUG)
+logging.getLogger("fiona.ogrext").setLevel(logging.WARNING)
 
 start = time.time()
 load_dotenv(f'{ROOT_DIR}/resources/.env')
 
 parser = argparse.ArgumentParser(description='Processing city shape, tree data and weather data')
 subparsers = parser.add_subparsers(help='actions', dest='action')
-
-city_shape_parser = subparsers.add_parser('city_shape', help="Download and process city shape")
-configure_city_shape_args(city_shape_parser)
 
 trees_parser = subparsers.add_parser('trees', help="Download and process tree data")
 configure_trees_args(trees_parser)

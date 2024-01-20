@@ -45,7 +45,10 @@ genus_mapping = read_genus_mapping()
 
 def lookup_genus(inputs):
     if 'species' in inputs:
-        return inputs['species'].split(" ")[0]
+        if not inputs['species'] is None:
+            return inputs['species'].split(" ")[0]
+        else:
+            return None
     else:
         return None
 
@@ -140,7 +143,7 @@ def transform_new_tree_data(new_trees, attribute_list, schema_mapping_dict, sche
     logger.info(f'Loaded {len(transformed_trees)} trees')
 
     # transform gml_id here
-    transformed_trees['id'] = transformed_trees['standortnr'].str.split(pat=".").str[1]
+    transformed_trees['id'] = new_trees['objectid']
 
     # drop not needed columns based on the columns of the old data
     for column in transformed_trees.columns:
