@@ -31,7 +31,13 @@ attribute_list = [
     'stammumfg',
     'lat',
     'lng',
-    'bezirk'
+    'bezirk',
+    'gebiet',
+    'letzte_bewaesserung',
+    'nachpflanzung_geplant',
+    'status_patenbaum',
+    'patenschaftsnummer',
+    'standzeitraum'
 ]
 
 geojson_file_name_default = 'trees-transformed'

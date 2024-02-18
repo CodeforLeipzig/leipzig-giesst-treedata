@@ -3,8 +3,10 @@ import logging
 import os
 from multiprocessing import Pool
 from functools import partial
-import numpy as np
 
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 global_engine: Engine
 
@@ -36,7 +38,7 @@ def create_trees_table():
                 "gebiet" text,
                 "letzte_bewaesserung" text,
                 "nachpflanzung_geplant" text,
-                "status_patenschaft" text,
+                "status_patenbaum" text,
                 "patenschaftsnummer" text,
                 "standzeitraum" text,
                 PRIMARY KEY ("id")
@@ -93,17 +95,17 @@ def _delete_removed_trees(original_tree_table, tmp_tree_table, year_range):
         return conn.execute(text(f'''
             DELETE FROM public."{original_tree_table}" WHERE standortnr IN (
                 SELECT B."standortnr" FROM public."{original_tree_table}" AS B
-                WHERE {year_range}
-                AND B."standortnr" NOT IN (
-                    SELECT A."standortnr" FROM public."{tmp_tree_table}" AS A
-                ) 
+                LEFT JOIN public."{tmp_tree_table}" A ON B."standortnr"=A."standortnr"
+                WHERE A."standortnr" IS NULL
+                AND B."standortnr" IS NOT NULL
+                AND {year_range}
                 AND B."standortnr" not like 'osm_%'
             )        
         '''))
 
 
 def delete_callback(curr_range, tree_count):
-    logging.info(f"Deleted {tree_count} trees in age range {curr_range}.")
+    logger.info(f"Deleted {tree_count} trees in age range {curr_range}.")
 
 
 def delete_removed_trees(original_tree_table, tmp_tree_table):
@@ -118,15 +120,15 @@ def _insert_added_trees(original_tree_table, tmp_tree_table, year_range):
         return conn.execute(text(f'''
             INSERT INTO public."{original_tree_table}" ("id")
             SELECT B."id" FROM public."{tmp_tree_table}" AS B
-            WHERE {year_range} 
-            AND B."id" IS NOT NULL AND B."id" NOT IN (
-                SELECT A."id" FROM public."{original_tree_table}" AS A
-            )        
+            LEFT JOIN public."{original_tree_table}" A ON B.id=A.id
+            WHERE A.id IS NULL
+            AND B.id IS NOT NULL
+            AND {year_range}         
         '''))
 
 
 def insert_callback(curr_range, tree_count):
-    logging.info(f"Inserted {tree_count} trees in age range {curr_range}.")
+    logger.info(f"Inserted {tree_count} trees in age range {curr_range}.")
 
 
 def insert_added_trees(original_tree_table, tmp_tree_table):
@@ -142,7 +144,7 @@ def _update_trees(original_tree_table, tmp_tree_table, year_range):
                    B."standortnr", B."strname", B."pflanzjahr", B."stammumfg", 
                    B."kronedurch", B."baumhoehe", B."bezirk", B."geom", B."aend_dat",
                    B."gebiet", B."letzte_bewaesserung", B."nachpflanzung_geplant",
-                   B."status_patenschaft", B."patenschaftsnummer", B."standzeitraum"
+                   B."status_patenbaum", B."patenschaftsnummer", B."standzeitraum"
             FROM public."{tmp_tree_table}" AS B
             WHERE {year_range}
         )
@@ -166,7 +168,7 @@ def _update_trees(original_tree_table, tmp_tree_table, year_range):
         "gebiet" = B."gebiet",
         "letzte_bewaesserung" = B."letzte_bewaesserung",
         "nachpflanzung_geplant" = B."nachpflanzung_geplant",
-        "status_patenschaft" = B."status_patenschaft",
+        "status_patenbaum" = B."status_patenbaum",
         "patenschaftsnummer" = B."patenschaftsnummer",
         "standzeitraum" = B."standzeitraum"
         FROM subquery AS B
@@ -177,7 +179,7 @@ def _update_trees(original_tree_table, tmp_tree_table, year_range):
 
 
 def update_callback(curr_range, tree_count):
-    logging.info(f"Updated {tree_count} trees in age range {curr_range}.")
+    logger.info(f"Updated {tree_count} trees in age range {curr_range}.")
 
 
 def update_trees(original_tree_table, tmp_tree_table):
