@@ -8,10 +8,10 @@ import pyarrow.parquet as pq
 def write_geoarrow_content(path, file_name):
     dtype_dic = {
         'id': str,
-        'lng': float,
-        'lat': float,
-        'radolan_sum': int,
-        'age': int
+        'lng': pd.Float32Dtype(),
+        'lat': pd.Float32Dtype(),
+        'radolan_sum': pd.UInt32Dtype(),
+        'age': pd.UInt32Dtype()
     }
     df = pd.read_csv(f"{path}{file_name}.csv", dtype=dtype_dic)
     gdf = gpd.GeoDataFrame(
