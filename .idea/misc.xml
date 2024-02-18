@@ -3,5 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="leipzig-giesst-treedata" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="treedata" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="berlin-treedata" project-jdk-type="Python SDK" />
 </project>

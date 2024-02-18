@@ -78,6 +78,7 @@ def process_trees(db_fun, process_callback):
 
     for sub_ranges in sub_ranges_list:
         with Pool(processes=process_count) as pool:
+            results = []
             for r in sub_ranges:
                 year_range = get_year_range_stmt(sub_ranges, r)
 
@@ -85,9 +86,20 @@ def process_trees(db_fun, process_callback):
                     return db_fun(year_range)
 
                 process_callback_partial = partial(process_callback, r)
-                pool.apply_async(run_stmt(), callback=process_callback_partial)
-            pool.close()
-            pool.join()
+                result = pool.apply_async(run_stmt(), callback=process_callback_partial)
+                results.append(result)
+            try:
+                ready = [result.ready() for result in results]
+                successful = [result.successful() for result in results]
+            except Exception:
+                continue
+            if all(successful):
+                break
+            if all(ready) and not all(successful):
+                raise Exception(
+                    f'Workers raised following exceptions {[result._value for result in results if not result.successful()]}')
+        pool.close()
+        pool.join()
 
 
 def _delete_removed_trees(original_tree_table, tmp_tree_table, year_range):
