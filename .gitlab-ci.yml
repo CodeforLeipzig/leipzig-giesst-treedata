@@ -39,8 +39,7 @@ download-and-process-treedata:
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $UPDATE_TARGET == "trees"
       when: always
-    - if: $UPDATE_TARGET == "trees"
-      when: manual
+  when: manual
   stage: process
   environment:
     name: $CI_COMMIT_REF_NAME
@@ -56,8 +55,7 @@ download-and-process-radolan-data:
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $UPDATE_TARGET == "radolan"
       when: always
-    - if: $UPDATE_TARGET == "radolan"
-      when: manual
+  when: manual
   stage: process
   environment:
     name: $CI_COMMIT_REF_NAME
