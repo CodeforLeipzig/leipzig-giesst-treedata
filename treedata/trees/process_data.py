@@ -46,7 +46,7 @@ genus_mapping = read_genus_mapping()
 def lookup_genus(inputs):
     if 'species' in inputs:
         if not inputs['species'] is None:
-            return inputs['species'].split(" ")[0]
+            return str(inputs['species']).split(" ")[0]
         else:
             return None
     else:

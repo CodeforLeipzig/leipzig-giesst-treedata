@@ -1,7 +1,5 @@
 # Leipzig waters – weather and tree data
 
-Please review the content of the `README.md` and adjust it to the project.
-
 ## Prerequisites
  * [Python 3.11](https://www.python.org/downloads/)
 
