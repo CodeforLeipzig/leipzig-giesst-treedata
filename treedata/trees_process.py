@@ -6,7 +6,7 @@ import pandas
 
 from trees.sync_trees import sync_trees
 from utils.get_data_from_wfs import read_geojson, store_as_geojson
-from utils.interact_with_database import get_db_engine, add_to_db
+from utils.interact_with_database import get_connection_dict, get_db_engine, add_to_db
 from trees.process_data import read_config, transform_new_tree_data
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,13 @@ attribute_list = [
     'stammumfg',
     'lat',
     'lng',
-    'bezirk'
+    'bezirk',
+    'gebiet',
+    'letzte_bewaesserung',
+    'nachpflanzung_geplant',
+    'status_patenbaum',
+    'patenschaftsnummer',
+    'standzeitraum'
 ]
 
 geojson_file_name_default = 'trees-transformed'
@@ -98,7 +104,7 @@ def handle_trees_process(args):
             transformed_trees['aend_dat'] = pandas.to_datetime(transformed_trees['aend_dat'], format='%Y-%m-%d')
         add_to_db(db_engine, transformed_trees, args.database_table_name)
         sync_trees(
-            engine=db_engine,
+            connection_dict=get_connection_dict(),
             original_tree_table='trees',
             tmp_tree_table=args.database_table_name
         )

@@ -37,7 +37,7 @@ build-base-image:
 
 download-and-process-treedata:
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $UPDATE_TARGET == "trees"
       when: always
     - when: manual
   stage: process
@@ -53,15 +53,17 @@ download-and-process-treedata:
 
 download-and-process-radolan-data:
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $UPDATE_TARGET == "radolan"
       when: always
     - when: manual
   stage: process
   environment:
     name: $CI_COMMIT_REF_NAME
   image: $CONTAINER_BASE_IMAGE
+  variables:
+    RADOLAN_DAYS: 2
   script:
     - /bin/bash -c "conda install -y -c conda-forge gdal krb5"
     - /bin/bash -c "pip install gssapi"
     - /bin/bash -c "gdalwarp --version"
-    - /bin/bash -c "conda run -n treedata python ./treedata/main.py weather --start-days-offset 2 --end-days-offset 1 --city-shape-geojson-file-name city_shape --city-shape-buffer-file-name city_shape-buffered"
+    - /bin/bash -c "conda run -n treedata python ./treedata/main.py weather --start-days-offset $RADOLAN_DAYS --end-days-offset 1 --city-shape-geojson-file-name city_shape --city-shape-buffer-file-name city_shape-buffered"

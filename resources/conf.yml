@@ -11,6 +11,12 @@ data-schema:
     strasse: strname
     pflanzjahr: pflanzjahr
     ot: bezirk
+    gebiet: gebiet
+    letzte_bewaesserung: letzte_bewaesserung
+    nachpflanzung_geplant: nachpflanzung_geplant
+    status_patenschaft: status_patenschaft
+    patenschaftsnummer: patenschaftsnummer
+    standzeitraum: standzeitraum
   calculated:
     gattungdeutsch:
       inputs:
