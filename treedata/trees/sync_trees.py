@@ -189,8 +189,28 @@ def update_trees(connection_dict, original_tree_table, tmp_tree_table):
     process_trees(db_fun, process_callback)
 
 
+def _delete_blacklisted_trees(connection_dict, original_tree_table, year_range):
+    sql = f'''
+        DELETE FROM public."{original_tree_table}"
+        WHERE gattung like 'Pflanzstelle'
+        AND {year_range}
+    '''
+    return execute_statement(connection_dict, sql)
+
+
+def remove_blacklisted_callback(tree_count):
+    logger.info(f"Deleted {tree_count} Pflanzstellen.")
+
+
+def remove_blacklisted(connection_dict, original_tree_table):
+    db_fun = partial(_delete_blacklisted_trees, connection_dict, original_tree_table)
+    process_callback = partial(remove_blacklisted_callback)
+    process_trees(db_fun, process_callback)
+
+
 def sync_trees(connection_dict, original_tree_table, tmp_tree_table):
     create_trees_table(connection_dict)
     delete_removed_trees(connection_dict, original_tree_table, tmp_tree_table)
     insert_added_trees(connection_dict, original_tree_table, tmp_tree_table)
     update_trees(connection_dict, original_tree_table, tmp_tree_table)
+    remove_blacklisted(connection_dict, original_tree_table)
