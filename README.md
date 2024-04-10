@@ -44,7 +44,6 @@ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh
 rm ./Miniconda3-latest-MacOSX-arm64.sh
 ```
 
-
 ### All
 #### Miniconda
  * change to folder containing this locally checked out Git repo
@@ -78,6 +77,14 @@ pip install -r requirements.txt
    * **solution**: `conda install -c conda-forge gdal libgdal tiledb=2.2`
  * error while converting WFS XML to GeoJSON (e.g. city shape): `fiona._err.CPLE_AppDefinedError: PROJ: internal_proj_create: no database context specified`
    * **solution**: remove environments via `unset PROJ_LIB` and `unset GDAL_DATA` as they conflict
+
+### Docker
+ * `cd .docker`
+ * under Mac ARM: `export DOCKER_DEFAULT_PLATFORM=linux/amd64`
+ * `docker build --no-cache -t conda .  `
+ * `cd ..`
+ * `docker build --no-cache -t treedata .`
+ * 
 
 ### PyCharm
  * Download Community Edition: https://www.jetbrains.com/pycharm/

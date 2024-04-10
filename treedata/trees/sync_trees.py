@@ -193,7 +193,6 @@ def _delete_blacklisted_trees(connection_dict, original_tree_table, year_range):
     sql = f'''
         DELETE FROM public."{original_tree_table}"
         WHERE gattung like 'Pflanzstelle'
-        AND {year_range}
     '''
     return execute_statement(connection_dict, sql)
 
