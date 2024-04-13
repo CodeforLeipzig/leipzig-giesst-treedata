@@ -16,17 +16,17 @@ def command_line_start():
         return []
 
 
-def polygonize_asc_file(buffer_file_name, input_file, output_file, file_name):
+def polygonize_asc_file(buffer_file_name, input_file, output_file, proj_file, file_name):
     buffer_file = f"{buffer_file_folder}/{buffer_file_name}.shp"
 
     # filter data
     cmdline = command_line_start() + [
         'gdalwarp', input_file, output_file,
-        "-s_srs", '+proj=stere +lon_0=10.0 +lat_0=90.0 +lat_ts=60.0 +a=6370040 +b=6370040 +units=m',
-        "-t_srs", '+proj=stere +lon_0=10.0 +lat_0=90.0 +lat_ts=60.0 +a=6370040 +b=6370040 +units=m',
+        "-s_srs", proj_file,
+        "-t_srs", proj_file,
         "-r", "near", "-of", "GTiff", "-cutline", buffer_file
     ]
-    logging.info("executing",  ' '.join(cmdline))
+    logging.info("executing", ' '.join(cmdline))
     returncode_gdalwarp = subprocess.call(cmdline)
     if returncode_gdalwarp != 0:
         raise Exception(f"gdalwarp failed for {buffer_file}")
@@ -39,12 +39,11 @@ def polygonize_asc_file(buffer_file_name, input_file, output_file, file_name):
         'gdal_polygonize.py', output_file, "-f",
         "ESRI Shapefile", shape_file, file_name, "MYFLD"
     ]
-    logging.info("executing",  ' '.join(cmdline))
+    logging.info("executing", ' '.join(cmdline))
     # gdal_polygonize.py D:/git/gbl/musterstadt-giesst-treedata/weather_data/data_files/temp.tif -f "ESRI Shapefile" D:/git/gbl/musterstadt-giesst-treedata/weather_data/data_files/temp.shp temp MYFLD
     returncode_polygonize = subprocess.call(cmdline)
     if returncode_polygonize != 0:
         raise Exception(f"gdal_polygonize failed for {shape_file}")
-
 
 
 def polygonize_weather_data(buffer_file_name):
@@ -69,12 +68,13 @@ def polygonize_weather_data(buffer_file_name):
             last_received = date_time_obj
         logging.info("Processing: {} / {}".format(len(filelist), counter + 1))
 
+        proj_file = path + "radolan.proj"
         output_file = path + f"{file_name}.tif"
 
         # for some reason the python gdal bindings are ****.
         # after hours of trying to get this to work in pure python,
         # this has proven to be more reliable and efficient. sorry.
 
-        polygonize_asc_file(buffer_file_name, input_file, output_file, file_name)
+        polygonize_asc_file(buffer_file_name, input_file, output_file, proj_file, file_name)
 
     return filelist, last_received
