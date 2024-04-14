@@ -93,7 +93,10 @@ def handle_weather(args):
     joined_path = f"{RADOLAN_PATH}/radolan-joined"
     if not args.skip_join_radolan_data:
         radolan_data = join_radolan_data()
-        store_as_geojson(radolan_data, joined_path)
+        if radolan_data is None:
+            logging.info("no radolan_data found, skipping storing geojson")
+        else:
+            store_as_geojson(radolan_data, joined_path)
     else:
         radolan_data = read_geojson(f"{joined_path}.geojson")
     if not args.skip_upload_radolan_data:
@@ -112,9 +115,12 @@ def handle_weather(args):
                 engine=db_engine,
                 radolan_grid_shape_path=f"{RADOLAN_PATH}/grid-transform.shp",
             )
-        upload_radolan_data(db_engine, radolan_data)
-        purge_data_older_than_time_limit_days(db_engine, TIME_LIMIT_DAYS)
-        purge_duplicates(db_engine)
+        if radolan_data is not None:
+            upload_radolan_data(db_engine, radolan_data)
+            purge_data_older_than_time_limit_days(db_engine, TIME_LIMIT_DAYS)
+            purge_duplicates(db_engine)
+        else:
+            logging.info("Radolan data not giving skipping upload_radolan_data")
     if not args.skip_update_tree_radolan_days:
         db_engine = get_db_engine()
         grid = get_weather_data_grid_cells(engine=db_engine, time_limit_days=TIME_LIMIT_DAYS)

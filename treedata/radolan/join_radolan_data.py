@@ -11,9 +11,9 @@ path = f"{ROOT_DIR}/resources/radolan"
 def join_radolan_data():
     filelist = []
     for (dirpath, dirnames, filenames) in os.walk(path):
-        for ffilename in filenames:
-            if ("RW_" in ffilename) and (".shp" in ffilename):
-                filelist.append(path + "/" + ffilename)
+        for filename in filenames:
+            if ("RW_" in filename) and (".shp" in filename):
+                filelist.append(path + "/" + filename)
 
     gdf = None
     if len(filelist) == 0:
@@ -39,4 +39,8 @@ def join_radolan_data():
                     gdf = df
                 else:
                     gdf = pandas.concat([gdf, df], ignore_index=True)
+            else:
+                logging.info("clean is 0 for file " + file)
+        else:
+            logging.info("no geometry found in file " + file)
     return gdf
