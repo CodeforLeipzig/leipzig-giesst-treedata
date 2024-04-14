@@ -26,7 +26,8 @@ def polygonize_asc_file(buffer_file_name, input_file, output_file, proj_file, fi
         "-t_srs", proj_file,
         "-r", "near", "-of", "GTiff", "-cutline", buffer_file
     ]
-    logging.info("executing", ' '.join(cmdline))
+    #logging.info("executing", ' '.join(cmdline))
+    logging.info("executing gdalwarp for " + input_file)
     returncode_gdalwarp = subprocess.call(cmdline)
     if returncode_gdalwarp != 0:
         raise Exception(f"gdalwarp failed for {buffer_file}")
