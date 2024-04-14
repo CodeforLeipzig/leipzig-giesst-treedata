@@ -40,7 +40,8 @@ def polygonize_asc_file(buffer_file_name, input_file, output_file, proj_file, fi
         'gdal_polygonize.py', output_file, "-f",
         "ESRI Shapefile", shape_file, file_name, "MYFLD"
     ]
-    logging.info("executing", ' '.join(cmdline))
+    #logging.info("executing", ' '.join(cmdline))
+    logging.info("executing gdal_polygonize for " + output_file)
     # gdal_polygonize.py D:/git/gbl/musterstadt-giesst-treedata/weather_data/data_files/temp.tif -f "ESRI Shapefile" D:/git/gbl/musterstadt-giesst-treedata/weather_data/data_files/temp.shp temp MYFLD
     returncode_polygonize = subprocess.call(cmdline)
     if returncode_polygonize != 0:
