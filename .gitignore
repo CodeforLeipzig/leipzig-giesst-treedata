@@ -229,6 +229,8 @@ out/
 /resources/radolan/**/*.shp
 /resources/radolan/**/*.shx
 /resources/.env
+/resources/.env.local
+/resources/.env.prod
 /resources/city_shape/**/*.cpg
 /resources/city_shape/**/*.dbf
 /resources/city_shape/**/*.shp

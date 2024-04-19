@@ -11,23 +11,13 @@ ROOT_DIR = os.path.abspath(os.curdir)
 
 
 def get_connection_dict():
-    for env_var in ["PG_DB", "PG_PORT", "PG_USER", "PG_PASS", "PG_DB"]:
+    env_vars = ["PG_SERVER", "PG_PORT", "PG_USER", "PG_PASS", "PG_DB"]
+    for env_var in env_vars:
         if env_var not in os.environ:
             msg = f"Environmental variable {env_var} does not exist but is required"
             logger.error(msg)
             raise Exception(msg)
-    pg_server = os.getenv("PG_SERVER")
-    pg_port = os.getenv("PG_PORT")
-    pg_username = os.getenv("PG_USER")
-    pg_password = os.getenv("PG_PASS")
-    pg_database = os.getenv("PG_DB")
-    return {
-        pg_server: pg_server,
-        pg_port: pg_port,
-        pg_username: pg_username,
-        pg_password: pg_password,
-        pg_database: pg_database
-    }
+    return [os.getenv(env_var) for env_var in env_vars]
 
 
 def get_db_engine():

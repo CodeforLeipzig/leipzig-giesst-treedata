@@ -14,6 +14,8 @@ logger.setLevel(logging.DEBUG)
 
 ROOT_DIR = os.path.abspath(os.curdir)
 
+collected_errors = []
+
 
 def read_config():
     with open(f"{ROOT_DIR}/resources/conf.yml", 'r') as stream:
@@ -59,7 +61,7 @@ def lookup_genus_german(inputs):
         if genus in genus_mapping:
             return genus_mapping[genus]
         else:
-            logger.info(f'{genus} not in genus mapping')
+            collected_errors.append(f'{genus} not in genus mapping')
             return None
     else:
         return None
@@ -207,6 +209,9 @@ def transform_new_tree_data(new_trees, attribute_list, schema_mapping_dict, sche
             logger.info(f'No inputs definition in calculation of {key}')
 
     logger.info("ℹ️ " + str(duplicates_count) + " trees with a duplicated id were dropped.")
+    if len(collected_errors) > 0:
+        errors = ",\n  * ".join(sorted(set(collected_errors)))
+        logger.info("Warnings during processing:\n  * " + errors)
     return transformed_trees
 
 
