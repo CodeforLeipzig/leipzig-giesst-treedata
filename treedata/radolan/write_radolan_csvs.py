@@ -8,7 +8,7 @@ def get_trees_with_radolan_data_total(engine, time_limit_days):
     with engine.connect() as conn:
         cursor = conn.execute(text(f'''
         SELECT 
-          trees.id, 
+          trees.external_tree_id as id, 
           trees.lng, 
           trees.lat, 
           (
@@ -39,7 +39,7 @@ def get_trees_with_radolan_data(engine):
     with engine.connect() as conn:
         cursor = conn.execute(text(f'''
       SELECT 
-        trees.id, 
+        trees.external_tree_id as id, 
         trees.lng, 
         trees.lat, 
         trees.radolan_sum, 
