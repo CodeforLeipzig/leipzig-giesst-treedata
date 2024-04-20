@@ -44,6 +44,9 @@ def update_radolan_geometry(engine, radolan_grid_shape_path):
         with engine.connect() as conn:
             conn.execute(text("UPDATE public.radolan_geometry SET centroid = ST_Centroid(geometry)"))
             conn.commit()
+    else:
+        logger.warning(f"No non null MYFLD values found in {radolan_grid_shape_path}")
+    return len(clean)
 
 
 def upload_radolan_data(engine, radolan_data):
@@ -52,7 +55,7 @@ def upload_radolan_data(engine, radolan_data):
     radolan_data['geometry'] = loads(dumps(radolan_data['geometry'], rounding_precision=5))
     radolan_data.to_postgis('radolan_temp', engine, if_exists='replace', index=False)
     with engine.connect() as conn:
-        conn.execute(text('''
+        result = conn.execute(text('''
             INSERT INTO "public".radolan_data(geom_id, value, measured_at) 
             SELECT radolan_geometry.id, sum(radolan_temp.value), radolan_temp.measured_at 
             FROM radolan_geometry JOIN radolan_temp 
@@ -60,22 +63,28 @@ def upload_radolan_data(engine, radolan_data):
             GROUP BY radolan_geometry.id, radolan_temp.measured_at
         '''))
         conn.commit()
+        number_of_rows = result.rowcount
+        logger.info(f"Updated radolan_data for {number_of_rows} entries")
 
 
 def purge_data_older_than_time_limit_days(engine, time_limit_days):
     with engine.connect() as conn:
-        conn.execute(text(f'''
+        result = conn.execute(text(f'''
             DELETE FROM radolan_data 
             WHERE measured_at < NOW() - INTERVAL '{time_limit_days} days'
         '''))
         conn.commit()
+        number_of_rows = result.rowcount
+        logger.info(f"Purged radolan_data older than {time_limit_days} days: {number_of_rows}")
 
 
 def purge_duplicates(engine):
     with engine.connect() as conn:
-        conn.execute(text('''
+        result = conn.execute(text('''
             DELETE FROM radolan_data AS a USING radolan_data AS b 
             WHERE a.id < b.id AND a.geom_id = b.geom_id 
             AND a.measured_at = b.measured_at
         '''))
         conn.commit()
+        number_of_rows = result.rowcount
+        logger.info(f"Purged duplicate radolan_data: {number_of_rows}")

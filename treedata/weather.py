@@ -104,17 +104,23 @@ def handle_weather(args):
         create_radolan_schema(db_engine)
         exists = exist_radolan_geometry(db_engine)
         if not exists:
+            logging.info("inserting radolan geometry")
             create_radolon_grid()
             polygonize_asc_file(
                 buffer_file_name=args.city_shape_buffer_file_name,
                 input_file=f"{RADOLAN_PATH}/grid-transform.asc",
                 output_file=f"{RADOLAN_PATH}/grid-buffer.asc",
-                file_name="grid-transform"
+                file_name="grid-transform",
+                proj_file=f"{RADOLAN_PATH}/radolan.proj",
             )
-            update_radolan_geometry(
+            update_count = update_radolan_geometry(
                 engine=db_engine,
                 radolan_grid_shape_path=f"{RADOLAN_PATH}/grid-transform.shp",
             )
+            if update_count == 0:
+                raise Exception("Should have updated radolan geometry")
+        else:
+            logging.info("found existing radolan geometry")
         if radolan_data is not None:
             upload_radolan_data(db_engine, radolan_data)
             purge_data_older_than_time_limit_days(db_engine, TIME_LIMIT_DAYS)
@@ -124,7 +130,11 @@ def handle_weather(args):
     if not args.skip_update_tree_radolan_days:
         db_engine = get_db_engine()
         grid = get_weather_data_grid_cells(engine=db_engine, time_limit_days=TIME_LIMIT_DAYS)
+        if len(grid) == 0:
+            logging.warning("no entries in get_weather_data_grid_cells")
         clean = get_sorted_cleaned_grid(grid, TIME_LIMIT_DAYS)
+        if len(clean) == 0:
+            logging.warning("no entries in get_sorted_cleaned_grid")
         start_date = datetime.now() + timedelta(days=-TIME_LIMIT_DAYS)
         start_date = start_date.replace(hour=0, minute=50, second=0, microsecond=0)
         end_date = datetime.now() + timedelta(days=-1)
@@ -137,7 +147,10 @@ def handle_weather(args):
             clean=clean
         )
         values = get_sorted_cleaned_grid_cells(clean, grid)
-        update_tree_radolan_days(db_engine, values)
+        if len(values) > 0:
+            update_tree_radolan_days(db_engine, values)
+        else:
+            logging.warning("no entries in get_sorted_cleaned_grid_cells")
     if not args.skip_upload_geojsons_to_s3 or not args.skip_upload_csvs_to_s3:
         for env_var in ["SUPABASE_URL", "SUPABASE_BUCKET_NAME", "SUPABASE_SERVICE_ROLE_KEY"]:
             if env_var not in os.environ:

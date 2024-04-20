@@ -19,8 +19,8 @@ def main():
 
     logger = logging.getLogger('root')
     logging.basicConfig(format=FORMAT)
-    logger.setLevel(logging.DEBUG)
-    logging.getLogger("fiona.ogrext").setLevel(logging.WARNING)
+    logger.setLevel(logging.INFO)
+    logging.getLogger("fiona").setLevel(logging.WARNING)
 
     start = time.time()
     load_dotenv(f'{ROOT_DIR}/resources/.env')

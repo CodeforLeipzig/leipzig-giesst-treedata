@@ -96,7 +96,7 @@ def process_trees(db_fun, process_callback):
 
 def _delete_removed_trees(connection_dict, original_tree_table, tmp_tree_table, year_range):
     sql = f'''
-        DELETE FROM public."{original_tree_table}" WHERE standortnr IN (
+        DELETE FROM public."{original_tree_table}" WHERE external_tree_id IN (
             SELECT B."external_tree_id" FROM public."{original_tree_table}" AS B
             LEFT JOIN public."{tmp_tree_table}" A ON B."external_tree_id"=A."external_tree_id"
             WHERE A."external_tree_id" IS NULL
