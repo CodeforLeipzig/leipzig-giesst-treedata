@@ -144,9 +144,6 @@ def transform_new_tree_data(new_trees, attribute_list, schema_mapping_dict, sche
     transformed_trees = new_trees.rename(columns=schema_mapping_dict)
     logger.info(f'Loaded {len(transformed_trees)} trees')
 
-    # transform gml_id here
-    transformed_trees['id'] = new_trees['objectid']
-
     # drop not needed columns based on the columns of the old data
     for column in transformed_trees.columns:
         if column == "geometry":
@@ -158,10 +155,11 @@ def transform_new_tree_data(new_trees, attribute_list, schema_mapping_dict, sche
                 except:
                     logger.error(f'{column} not found')
 
-    duplicates_count = len(transformed_trees) - len(transformed_trees.drop_duplicates(subset=['id']))
+    id_column = 'external_tree_id'
+    duplicates_count = len(transformed_trees) - len(transformed_trees.drop_duplicates(subset=[id_column]))
 
     # drop duplicate features based on gml_id
-    transformed_trees = transformed_trees.drop_duplicates(subset=['id'])
+    transformed_trees = transformed_trees.drop_duplicates(subset=[id_column])
 
     # replace NA values with 'undefined' and transform data formats to string
     for column in transformed_trees.columns:

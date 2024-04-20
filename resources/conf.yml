@@ -1,5 +1,6 @@
 data-schema:
   mapping:
+    objectid: external_tree_id
     geometry: geometry
     baumhoehe: baumhoehe
     st_durchm: stammdurch

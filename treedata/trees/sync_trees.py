@@ -33,6 +33,7 @@ def execute_statement(connection_dict, sql, has_result=True):
 def create_trees_table(connection_dict):
     sql = '''CREATE TABLE IF NOT EXISTS "public"."trees" (
                 "id" text NOT NULL,
+                "external_tree_id" text NOT NULL,
                 "lat" text,
                 "lng" text,
                 "artdtsch" text,
@@ -96,10 +97,10 @@ def process_trees(db_fun, process_callback):
 def _delete_removed_trees(connection_dict, original_tree_table, tmp_tree_table, year_range):
     sql = f'''
         DELETE FROM public."{original_tree_table}" WHERE standortnr IN (
-            SELECT B."standortnr" FROM public."{original_tree_table}" AS B
-            LEFT JOIN public."{tmp_tree_table}" A ON B."standortnr"=A."standortnr"
-            WHERE A."standortnr" IS NULL
-            AND B."standortnr" IS NOT NULL
+            SELECT B."external_tree_id" FROM public."{original_tree_table}" AS B
+            LEFT JOIN public."{tmp_tree_table}" A ON B."external_tree_id"=A."external_tree_id"
+            WHERE A."external_tree_id" IS NULL
+            AND B."external_tree_id" IS NOT NULL
             AND {year_range}
             AND B."standortnr" not like 'osm_%'
         )   
@@ -121,9 +122,9 @@ def _insert_added_trees(connection_dict, original_tree_table, tmp_tree_table, ye
     sql = f'''
                 INSERT INTO public."{original_tree_table}" ("id")
                 SELECT B."id" FROM public."{tmp_tree_table}" AS B
-                LEFT JOIN public."{original_tree_table}" A ON B.id=A.id
-                WHERE A.id IS NULL
-                AND B.id IS NOT NULL
+                LEFT JOIN public."{original_tree_table}" A ON B.external_tree_id=A.external_tree_id
+                WHERE A.external_tree_id IS NULL
+                AND B.external_tree_id IS NOT NULL
                 AND {year_range}
             '''
     return execute_statement(connection_dict, sql)
@@ -142,7 +143,8 @@ def insert_added_trees(connection_dict, original_tree_table, tmp_tree_table):
 def _update_trees(connection_dict, original_tree_table, tmp_tree_table, year_range):
     sql = f'''
         WITH subquery AS (
-            SELECT B."id", B."lat", B."lng", B."artdtsch", B."artbot", B."gattungdeutsch", B."gattung", 
+            SELECT B."external_tree_id", B."lat", B."lng", 
+                   B."artdtsch", B."artbot", B."gattungdeutsch", B."gattung", 
                    B."standortnr", B."strname", B."pflanzjahr", B."stammumfg", 
                    B."kronedurch", B."baumhoehe", B."bezirk", B."geom", B."aend_dat",
                    B."gebiet", B."letzte_bewaesserung", B."nachpflanzung_geplant",
@@ -174,7 +176,7 @@ def _update_trees(connection_dict, original_tree_table, tmp_tree_table, year_ran
         "patenschaftsnummer" = B."patenschaftsnummer",
         "standzeitraum" = B."standzeitraum"
         FROM subquery AS B
-        WHERE A."id" = B."id"
+        WHERE A."external_tree_id" = B."external_tree_id"
     '''
     return execute_statement(connection_dict, sql)
 

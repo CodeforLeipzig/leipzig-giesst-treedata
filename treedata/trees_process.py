@@ -15,7 +15,7 @@ logger.setLevel(logging.DEBUG)
 ROOT_DIR = os.path.abspath(os.curdir)
 
 attribute_list = [
-    'id',
+    'external_tree_id',
     'geometry',
     'strname',
     'artbot',
