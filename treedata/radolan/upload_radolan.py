@@ -20,7 +20,7 @@ def exist_radolan_geometry(engine):
 def update_radolan_geometry(engine, radolan_grid_shape_path):
     df = geopandas.read_file(radolan_grid_shape_path)
     df = df.to_crs("epsg:4326")
-    clean = df[(df['MYFLD'].notnull())]
+    clean = df[(df['MYFLD'] > 0) & (df['MYFLD'].notnull())]
     if len(clean) > 0:
         values = []
         for index, row in clean.iterrows():
@@ -53,7 +53,8 @@ def upload_radolan_data(engine, radolan_data):
     radolan_data = radolan_data.rename(columns={'MYFLD': 'value'})
     radolan_data['measured_at'] = pandas.to_datetime(radolan_data['measured_at'])
     radolan_data['geometry'] = loads(dumps(radolan_data['geometry'], rounding_precision=5))
-    radolan_data.to_postgis('radolan_temp', engine, if_exists='replace', index=False)
+
+    radolan_data.to_postgis('radolan_temp', engine, if_exists='replace', index=False, chunksize=200)
     with engine.connect() as conn:
         result = conn.execute(text('''
             INSERT INTO "public".radolan_data(geom_id, value, measured_at) 

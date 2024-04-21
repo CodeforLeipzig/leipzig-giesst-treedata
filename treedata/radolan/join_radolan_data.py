@@ -33,14 +33,14 @@ def join_radolan_data():
         if df['geometry'].count() > 0:
             clean = df[(df['MYFLD'] > 0) & (df['MYFLD'].notnull())]
             if len(clean) > 0:
-                logging.info("🌧 Found some rain")
+                logging.info("🌧 Found some rain for file " + file)
                 df['measured_at'] = date_time_obj.strftime('%Y-%m-%d')
                 if gdf is None:
                     gdf = df
                 else:
                     gdf = pandas.concat([gdf, df], ignore_index=True)
             else:
-                logging.info("clean is 0 for file " + file)
+                logging.debug("clean is 0 for file " + file)
         else:
             logging.info("no geometry found in file " + file)
     return gdf
