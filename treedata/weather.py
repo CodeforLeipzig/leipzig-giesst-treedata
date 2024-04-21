@@ -109,9 +109,8 @@ def handle_weather(args):
             polygonize_asc_file(
                 buffer_file_name=args.city_shape_buffer_file_name,
                 input_file=f"{RADOLAN_PATH}/grid-transform.asc",
-                output_file=f"{RADOLAN_PATH}/grid-buffer.asc",
-                file_name="grid-transform",
-                proj_file=f"{RADOLAN_PATH}/radolan.proj",
+                output_file=f"{RADOLAN_PATH}/grid-buffer.tif",
+                file_name="grid-transform"
             )
             update_count = update_radolan_geometry(
                 engine=db_engine,

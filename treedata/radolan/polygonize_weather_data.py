@@ -16,14 +16,14 @@ def command_line_start():
         return []
 
 
-def polygonize_asc_file(buffer_file_name, input_file, output_file, proj_file, file_name):
+def polygonize_asc_file(buffer_file_name, input_file, output_file, file_name):
     buffer_file = f"{buffer_file_folder}/{buffer_file_name}.shp"
 
     # filter data
     default_gdalwarp_cmdline = [
         'gdalwarp', input_file, output_file, "-overwrite",
         "-s_srs", '+proj=stere +lon_0=10.0 +lat_0=90.0 +lat_ts=60.0 +a=6370040 +b=6370040 +units=m',
-        "-t_srs", 'EPSG:3857',
+        "-t_srs", '+proj=stere +lon_0=10.0 +lat_0=90.0 +lat_ts=60.0 +a=6370040 +b=6370040 +units=m',
         "-r", "near", "-of", "GTiff", "-cutline", buffer_file
     ]
     gdalwarp_cmdline = command_line_start() + default_gdalwarp_cmdline
@@ -71,13 +71,12 @@ def polygonize_weather_data(buffer_file_name):
             last_received = date_time_obj
         logging.info("Processing: {} / {}".format(len(filelist), counter + 1))
 
-        proj_file = path + "radolan.proj"
         output_file = path + f"{file_name}.tif"
 
         # for some reason the python gdal bindings are ****.
         # after hours of trying to get this to work in pure python,
         # this has proven to be more reliable and efficient. sorry.
 
-        polygonize_asc_file(buffer_file_name, input_file, output_file, proj_file, file_name)
+        polygonize_asc_file(buffer_file_name, input_file, output_file, file_name)
 
     return filelist, last_received
