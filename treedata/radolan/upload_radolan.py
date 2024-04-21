@@ -59,7 +59,7 @@ def upload_radolan_data(engine, radolan_data):
             INSERT INTO "public".radolan_data(geom_id, value, measured_at) 
             SELECT radolan_geometry.id, sum(radolan_temp.value), radolan_temp.measured_at 
             FROM radolan_geometry JOIN radolan_temp 
-            ON ST_WithIn(radolan_geometry.centroid, radolan_temp.geometry)
+            ON ST_WithIn(ST_Transform(radolan_geometry.centroid, 4326), ST_Transform(radolan_temp.geometry, 4326))
             GROUP BY radolan_geometry.id, radolan_temp.measured_at
         '''))
         conn.commit()
