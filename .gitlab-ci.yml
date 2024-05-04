@@ -47,7 +47,21 @@ download-and-process-treedata:
   script:
     - /bin/bash -c "conda run -n treedata python ./treedata/main.py trees --source-encoding iso-8859-1 --xml-file-name wfs --skip-convert-to-geojson"
     - /bin/bash -c "sed -i s/UTF-8/ISO-8859-1/g resources/trees/wfs.xml"
+    - /bin/bash -c "sed -i s/ä/aaa/g resources/trees/wfs.xml"
+    - /bin/bash -c "sed -i s/Ä/AAA/g resources/trees/wfs.xml"
+    - /bin/bash -c "sed -i s/ö/ooo/g resources/trees/wfs.xml"
+    - /bin/bash -c "sed -i s/Ö/OOO/g resources/trees/wfs.xml"
+    - /bin/bash -c "sed -i s/ü/uuu/g resources/trees/wfs.xml"
+    - /bin/bash -c "sed -i s/Ü/UUU/g resources/trees/wfs.xml"
+    - /bin/bash -c "sed -i s/ß/ssss/g resources/trees/wfs.xml"
     - /bin/bash -c "conda run -n treedata python ./treedata/main.py trees --source-encoding iso-8859-1 --xml-file-name wfs --geojson-file-name trees --skip-download-wfs-xml"
+    - /bin/bash -c "sed -i s/aaa/ä/g resources/trees/trees.geojson"
+    - /bin/bash -c "sed -i s/AAA/Ä/g resources/trees/trees.geojson"
+    - /bin/bash -c "sed -i s/ooo/ö/g resources/trees/trees.geojson"
+    - /bin/bash -c "sed -i s/OOO/Ö/g resources/trees/trees.geojson"
+    - /bin/bash -c "sed -i s/uuu/ü/g resources/trees/trees.geojson"
+    - /bin/bash -c "sed -i s/UUU/Ü/g resources/trees/trees.geojson"
+    - /bin/bash -c "sed -i s/ssss/ß/g resources/trees/trees.geojson"
     - /bin/bash -c "conda run -n treedata python ./treedata/main.py trees_process --city-shape-geojson-file-name city_shape --trees-geojson-file-name trees --geojson-file-name trees-transformed --database-table-name trees_tmp"
 
 

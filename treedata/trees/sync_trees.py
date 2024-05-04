@@ -120,8 +120,8 @@ def delete_removed_trees(connection_dict, original_tree_table, tmp_tree_table):
 
 def _insert_added_trees(connection_dict, original_tree_table, tmp_tree_table, year_range):
     sql = f'''
-                INSERT INTO public."{original_tree_table}" ("id")
-                SELECT B."id" FROM public."{tmp_tree_table}" AS B
+                INSERT INTO public."{original_tree_table}" ("external_tree_id")
+                SELECT B."external_tree_id" FROM public."{tmp_tree_table}" AS B
                 LEFT JOIN public."{original_tree_table}" A ON B.external_tree_id=A.external_tree_id
                 WHERE A.external_tree_id IS NULL
                 AND B.external_tree_id IS NOT NULL
