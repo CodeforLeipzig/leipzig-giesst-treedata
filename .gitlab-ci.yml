@@ -79,5 +79,5 @@ download-and-process-radolan-data:
   script:
     - /bin/bash -c "conda install -y -c conda-forge gdal krb5"
     - /bin/bash -c "pip install gssapi"
-    - /bin/bash -c "gdalwarp --version"
+    - /bin/bash -c "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cpplibs/sqlite-3.44.2/lib && gdalwarp --version"
     - /bin/bash -c "export PROJ_LIB=/root/miniconda3/share/proj && conda run -n treedata python ./treedata/main.py weather --start-days-offset $RADOLAN_DAYS --end-days-offset 1 --city-shape-geojson-file-name city_shape --city-shape-buffer-file-name city_shape-buffered"
